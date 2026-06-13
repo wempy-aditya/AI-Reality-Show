@@ -247,7 +247,7 @@ export default function LiveSimulation() {
             ))}
             {dramaLogs.length === 0 && (
               <div className="text-center text-slate-600 text-xs py-5">
-                No drama yet. It's too peaceful.
+                No drama yet. It&apos;s too peaceful.
               </div>
             )}
           </div>

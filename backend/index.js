@@ -28,7 +28,7 @@ app.get('/api/health', (req, res) => {
 app.post('/api/save-scenario', (req, res) => {
   const { name, data } = req.body;
   const jsonString = JSON.stringify(data);
-  db.run(`INSERT INTO simulations (name, data) VALUES (?, ?)`, [name, jsonString], function(err) {
+  db.run(`INSERT INTO simulations (name, data) VALUES (?, ?)`, [name, jsonString], function (err) {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
@@ -75,9 +75,9 @@ io.on('connection', (socket) => {
     simulationState.round = 0;
     simulationState.maxRounds = config.settings.rounds || 10;
     simulationState.worldState = engine.initializeWorld(config);
-    
+
     io.emit('simulation-status', simulationState);
-    
+
     // Start simulation loop
     runSimulationLoop();
   });
@@ -105,17 +105,17 @@ io.on('connection', (socket) => {
 
 async function runSimulationLoop() {
   while (
-    simulationState.isRunning && 
-    !simulationState.isPaused && 
+    simulationState.isRunning &&
+    !simulationState.isPaused &&
     (simulationState.maxRounds === 'Unlimited' || simulationState.round < simulationState.maxRounds)
   ) {
     simulationState.round++;
-    
+
     // Process one turn via Engine
     const turnResult = await engine.processTurn(simulationState.worldState, (speakerName) => {
       io.emit('typing', { speaker: speakerName });
     });
-    
+
     // Broadcast the result
     io.emit('new-turn', {
       round: simulationState.round,
@@ -129,14 +129,14 @@ async function runSimulationLoop() {
     // Wait 3 seconds before next turn
     await new Promise(resolve => setTimeout(resolve, 3000));
   }
-  
+
   if (simulationState.isRunning && !simulationState.isPaused) {
     simulationState.isRunning = false;
     io.emit('simulation-finished');
   }
 }
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
